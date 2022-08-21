@@ -4,7 +4,7 @@ import socket
 if __name__ == '__main__':
     data = ['vast', 'pstance', 'covid'][0]
     topic = ''
-    batch_size = 8
+    batch_size = 16
     epochs = 50
     patience = 10
     lr = 2e-5
