@@ -66,8 +66,8 @@ class Engine:
             print(f'Epoch: {epoch+1}\tTrain Loss: {loss:.3f}\tVal F1: {f1:.3f}\n'
                   f'Val F1_favor: {f1_favor:.3f}\tVal F1_against: {f1_against:.3f}\tVal F1_Neutral: {f1_neutral:.3f}\n'
                   f'Best Epoch: {best_epoch+1}\tBest Epoch Val F1: {best_epoch_f1:.3f}\n')
-            if epoch - best_epoch >= self.args.patience:
-                break
+#             if epoch - best_epoch >= self.args.patience:
+#                 break
 
         print('Saving the best checkpoint....')
         # torch.save(self.model.state_dict(), 'ckp/model.pt')   # uncomment this line to save the ckp
