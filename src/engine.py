@@ -152,7 +152,7 @@ class Engine:
         y_true = np.concatenate(y_true, axis=0)
         mask_few_shot = np.concatenate(mask_few_shot)
 
-        from sklearn.metrics import f1_score
+        from sklearn.metrics import f1_score, accuracy_score
         if self.args.data != 'pstance':
             f1_against, f1_favor, f1_neutral = f1_score(y_true, y_pred, average=None)
         else:
@@ -176,6 +176,11 @@ class Engine:
             y_pred_zero = y_pred[mask_zero_shot]
             f1_against_zero, f1_favor_zero, f1_neutral_zero = f1_score(y_true_zero, y_pred_zero, average=None)
             f1_avg_zero = (f1_against_zero + f1_favor_zero + f1_neutral_zero) / 3
+            
+            acc_against_zero, acc_favor_zero, acc_neutral_zero = accuracy_score(y_true_zero, y_pred_zero, average=None)
+            acc_avg_zero = (acc_against_zero + acc_favor_zero + acc_neutral_zero) / 3
+            
+            print(f"Test Acc: {acc_avg_zero}\tTest Acc Favor: {acc_favor_zero}\tTest Acc Against: {acc_against_zero}\tTest Acc Neutral: {acc_neutral_zero}")
 
             return f1_avg, f1_favor, f1_against, f1_neutral, \
                    f1_avg_few, f1_favor_few, f1_against_few, f1_neutral_few, \
