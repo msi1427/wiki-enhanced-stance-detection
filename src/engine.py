@@ -123,7 +123,8 @@ class Engine:
         self.model.eval()
         y_pred = []
         y_true = []
-        mask_few_shot = []
+        mask_zero_shot = []
+#         mask_few_shot = []
         val_loader = self.val_loader if phase == 'val' else self.test_loader
         with torch.no_grad():
             for i, batch in enumerate(val_loader):
@@ -131,10 +132,11 @@ class Engine:
                 attention_mask = batch['attention_mask'].to(self.device)
                 token_type_ids = batch['token_type_ids'].to(self.device)
                 labels = batch['stances']
-                if self.args.data == 'vast' and phase == 'test':
-                    mask_few_shot_ = batch['few_shot']
-                else:
-                    mask_few_shot_ = torch.tensor([0])
+#                 if self.args.data == 'vast' and phase == 'test':
+#                     mask_few_shot_ = batch['few_shot']
+#                 else:
+#                     mask_few_shot_ = torch.tensor([0])
+                mask_zero_shot = torch.tensor(0)
                 if self.args.wiki_model and self.args.wiki_model != self.args.model:
                     input_ids_wiki = batch['input_ids_wiki'].to(self.device)
                     attention_mask_wiki = batch['attention_mask_wiki'].to(self.device)
@@ -146,12 +148,14 @@ class Engine:
                 preds = logits.argmax(dim=1)
                 y_pred.append(preds.detach().to('cpu').numpy())
                 y_true.append(labels.detach().to('cpu').numpy())
-                mask_few_shot.append(mask_few_shot_.detach().to('cpu').numpy())
+                mask_zero_shot.append(mask_zero_shot.detach().to('cpu').numpy())
+#                 mask_few_shot.append(mask_few_shot_.detach().to('cpu').numpy())
 
         y_pred = np.concatenate(y_pred, axis=0)
         y_true = np.concatenate(y_true, axis=0)
-        mask_few_shot = np.concatenate(mask_few_shot)
-
+#         mask_few_shot = np.concatenate(mask_few_shot)
+        mask_zero_shot = np.concatenate(mask_zero_shot)
+    
         from sklearn.metrics import f1_score, accuracy_score
         if self.args.data != 'pstance':
             f1_against, f1_favor, f1_neutral = f1_score(y_true, y_pred, average=None)
@@ -165,13 +169,13 @@ class Engine:
             f1_avg = (f1_favor + f1_against + f1_neutral) / 3
 
         if self.args.data == 'vast' and phase == 'test':
-            mask_few_shot = mask_few_shot.astype(bool)
-            y_true_few = y_true[mask_few_shot]
-            y_pred_few = y_pred[mask_few_shot]
-            f1_against_few, f1_favor_few, f1_neutral_few = f1_score(y_true_few, y_pred_few, average=None)
-            f1_avg_few = (f1_against_few + f1_favor_few + f1_neutral_few) / 3
+#             mask_few_shot = mask_few_shot.astype(bool)
+#             y_true_few = y_true[mask_few_shot]
+#             y_pred_few = y_pred[mask_few_shot]
+#             f1_against_few, f1_favor_few, f1_neutral_few = f1_score(y_true_few, y_pred_few, average=None)
+#             f1_avg_few = (f1_against_few + f1_favor_few + f1_neutral_few) / 3
 
-            mask_zero_shot = ~mask_few_shot
+            mask_zero_shot = mask_zero_shot.astype(bool)
             y_true_zero = y_true[mask_zero_shot]
             y_pred_zero = y_pred[mask_zero_shot]
             f1_against_zero, f1_favor_zero, f1_neutral_zero = f1_score(y_true_zero, y_pred_zero, average=None)
