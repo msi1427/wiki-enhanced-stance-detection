@@ -218,7 +218,10 @@ class VASTZeroFewShot(Dataset):
 
         if wiki_model:
             wiki_dict = pickle.load(open(f'{path}/wiki_dict.pkl', 'rb'))
-            wiki_summaries = df['wikitext'].tolist()
+            if phase in ['train', 'test']:
+                wiki_summaries = df['new_topic'].map(wiki_dict).tolist()
+            else:
+                wiki_summaries = df['wikitext'].tolist()
 
             if wiki_model == model:
                 tokenizer_wiki = tokenizer
