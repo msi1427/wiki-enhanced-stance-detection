@@ -192,13 +192,13 @@ class VASTZeroFewShot(Dataset):
         topics = df['topic_str'].tolist()
         tweets = df['text_s'].tolist()
         stances = df['label'].tolist()
-#         if phase == 'test':
-#             few_shot = df['seen?'].tolist()
-#             qte = df['Qte'].tolist()
-#             sarc = df['Sarc'].tolist()
-#             imp = df['Imp'].tolist()
-#             mls = df['mlS'].tolist()
-#             mlt = df['mlT'].tolist()
+        if phase == 'test':
+            few_shot = df['seen?'].tolist()
+            qte = df['Qte'].tolist()
+            sarc = df['Sarc'].tolist()
+            imp = df['Imp'].tolist()
+            mls = df['mlS'].tolist()
+            mlt = df['mlT'].tolist()
         else:
             few_shot = np.zeros(df.shape[0])
             qte = np.zeros(df.shape[0])
@@ -218,12 +218,10 @@ class VASTZeroFewShot(Dataset):
 
         if wiki_model:
             wiki_dict = pickle.load(open(f'{path}/wiki_dict.pkl', 'rb'))
-            if phase == 'train':
+            if phase in ['train', 'test']:
                 wiki_summaries = df['new_topic'].map(wiki_dict).tolist()
-            elif phase == 'test':
-                wiki_summaries = df['wikitext'].tolist()
             else:
-                wiki_summaries = df['new_topic'].map(wiki_dict).tolist()
+                wiki_summaries = df['wikitext'].tolist()
 
             if wiki_model == model:
                 tokenizer_wiki = tokenizer
@@ -276,12 +274,12 @@ class VASTZeroFewShot(Dataset):
             'input_ids_wiki': self.input_ids_wiki[index],
             'attention_mask_wiki': self.attention_mask_wiki[index],
             'stances': self.stances[index],
-#             'few_shot': self.few_shot[index],
-#             'qte': self.qte[index],
-#             'sarc': self.sarc[index],
-#             'imp': self.imp[index],
-#             'mls': self.mls[index],
-#             'mlt': self.mlt[index],
+            'few_shot': self.few_shot[index],
+            'qte': self.qte[index],
+            'sarc': self.sarc[index],
+            'imp': self.imp[index],
+            'mls': self.mls[index],
+            'mlt': self.mlt[index],
         }
         return item
 
